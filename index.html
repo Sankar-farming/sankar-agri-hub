@@ -21,7 +21,6 @@
 <meta name="twitter:description" content="Fresh, honest produce — straight from Sankar's farm and mill in Nagaram.">
 <meta name="theme-color" content="#1F3D2B">
 <link rel="icon" href="images\mariappan-logo.jpg.png">
-<!-- data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='16' fill='%231F3D2B'/%3E%3Ctext x='50' y='66' font-size='58' text-anchor='middle' fill='%23C9A227' font-family='Georgia'%3ER%3C/text%3E%3C/svg%3E -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -587,7 +586,7 @@ body.lang-ta .footer-col h4{ font-family:var(--font-ta); text-transform:none; le
             <span class="order-id" id="ticketId">TICKET&nbsp;#—</span>
           </div>
 
-          <form id="orderForm" novalidate  https://formspree.io/f/xlgqelya method="POST">
+          <form id="orderForm" action="https://formspree.io/f/xlgqelya" method="POST" novalidate>
             <input type="hidden" name="_next" value="https://sankar-agri-hub.netlify.app/">
             <input type="hidden" name="_subject" value="New Order Request - Sankar Agri Hub">
             <input type="hidden" name="_captcha" value="false">
@@ -976,7 +975,6 @@ document.querySelectorAll('.faq-item').forEach(item => {
   });
 });
 
-/* ===================== Checkbox "tag" selection ===================== */
 /* ===================== Improved Checkbox Selection ===================== */
 document.querySelectorAll('.check-card').forEach(card => {
   const input = card.querySelector('input');
@@ -1001,8 +999,8 @@ function setFieldState(id, valid){
 }
 
 form.addEventListener('submit', (e) => {
-  // We DO NOT use e.preventDefault() here anymore because 
-  // we want the form to send the data to FormSubmit.co
+  // We DO NOT use e.preventDefault() unconditionally here anymore because 
+  // we want the form to send the data to Formspree
   
   const name = document.getElementById('name').value.trim();
   const phone = document.getElementById('phone').value.trim();
