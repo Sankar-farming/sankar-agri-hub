@@ -102,6 +102,7 @@ h1,h2,h3,h4{font-family:var(--font-display); font-weight:600; color:var(--paddy)
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: top center; /* Keeps face centered */
     animation: slowBreath 8s infinite alternate ease-in-out;
 }
 .biz-image { height: 220px; margin-bottom: 24px; }
@@ -143,10 +144,10 @@ h1,h2,h3,h4{font-family:var(--font-display); font-weight:600; color:var(--paddy)
 .lang-btn:hover:not([aria-pressed="true"]){ color: var(--paddy); }
 .lang-toggle-mobile{ margin: 16px 24px; align-self:flex-start; }
 
-/* ===================== NAV ===================== */
+/* ===================== NAV & SLIDE MENU ===================== */
 .site-nav{
-  position: sticky; top:0; z-index: 50; background: rgba(250,247,239,0.92);
-  backdrop-filter: blur(6px); border-bottom: 1px solid var(--line);
+  position: sticky; top:0; z-index: 101; background: var(--rice);
+  border-bottom: 1px solid var(--line);
 }
 .site-nav .wrap{ display:flex; align-items:center; justify-content:space-between; padding-top:14px; padding-bottom:14px; gap:16px; }
 .brand{
@@ -161,14 +162,36 @@ body.lang-ta .brand{ font-family: var(--font-ta); font-size:1.02rem; }
 .nav-links a:hover{color:var(--brick);}
 .nav-cta{display:none;}
 
-@media(min-width:1100px){ .nav-cta{display:inline-flex;} }
-.nav-toggle{ display:flex; flex-direction:column; gap:5px; background:none; border:none; padding:8px; }
-.nav-toggle span{width:24px; height:2px; background:var(--paddy); border-radius:2px;}
-@media(min-width:1100px){ .nav-toggle{display:none;} }
-.mobile-menu{ display:none; flex-direction:column; gap:0; background:var(--rice); border-bottom:1px solid var(--line); }
-.mobile-menu.open{display:flex;}
-.mobile-menu a{padding:14px 24px; border-top:1px solid var(--line); font-weight:500;}
-@media(min-width:1100px){ .nav-links{display:flex;} .mobile-menu{display:none !important;} }
+/* Hamburger Button */
+.nav-toggle{ display:flex; flex-direction:column; gap:5px; background:none; border:none; padding:8px; z-index:102;}
+.nav-toggle span{width:24px; height:2px; background:var(--paddy); border-radius:2px; transition: 0.3s ease;}
+.nav-toggle.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-toggle.open span:nth-child(2) { opacity: 0; }
+.nav-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* Slide Menu Overlay */
+.menu-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(36, 41, 31, 0.6); backdrop-filter: blur(2px);
+  z-index: 99; opacity: 0; visibility: hidden; transition: 0.3s ease;
+}
+.menu-overlay.open { opacity: 1; visibility: visible; }
+
+/* Mobile Slide Menu */
+.mobile-menu {
+  position: fixed; top: 0; right: -100%; width: 280px; max-width: 85%; height: 100vh;
+  background: var(--rice); box-shadow: -5px 0 20px rgba(0,0,0,0.15);
+  display: flex; flex-direction: column; gap: 0;
+  transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 100; padding-top: 80px;
+}
+.mobile-menu.open { right: 0; }
+.mobile-menu a { padding: 18px 24px; border-bottom: 1px solid var(--line); font-weight: 500; font-size: 1.05rem;}
+
+@media(min-width:1100px){ 
+  .nav-cta{display:inline-flex;} 
+  .nav-toggle, .mobile-menu, .menu-overlay {display:none !important;} 
+}
 @media(max-width:1099px){ .nav-links{display:none;} }
 
 /* ===================== HERO ===================== */
@@ -176,13 +199,11 @@ body.lang-ta .brand{ font-family: var(--font-ta); font-size:1.02rem; }
 .hero-grid{ display:grid; grid-template-columns: 1fr; gap: 0; }
 @media(min-width:900px){ .hero-grid{grid-template-columns: 1.05fr 0.95fr; align-items:stretch;} }
 
-/* FIX: PERFECT LEFT ALIGNMENT FOR THE HERO TEXT */
 .hero-copy{ padding: 56px 24px 64px; position:relative; z-index:2; display:flex; flex-direction:column; justify-content:center; }
 @media(min-width:900px){ 
   .hero-copy{
     padding-left: max(24px, calc((100vw - 1180px) / 2 + 24px)); 
-    padding-right: 48px; 
-    max-width: 100%; 
+    padding-right: 48px; max-width: 100%; 
   } 
 }
 
@@ -199,18 +220,28 @@ body.lang-ta .hero-copy h1 em{ font-style:normal; }
 .hero-note::before{content:"●"; color:var(--sprout); font-size:0.6rem;}
 
 .hero-visual{
-  position:relative; min-height: 340px;
+  position:relative; min-height: 400px;
   background: linear-gradient(155deg, var(--paddy) 0%, var(--sprout) 100%);
   display:flex; align-items:center; justify-content:center; padding: 40px 24px;
 }
 @media(min-width:900px){ .hero-visual{min-height: 620px;} }
 
+/* ===================== HANG TAG FIX ===================== */
 .hang-tag{
-  position:absolute; top: 24px; right: 18px; background: var(--husk-light); color: var(--paddy);
+  --tag-scale: 0.85; /* Scale down for mobile */
+  position:absolute; bottom: 15px; right: 10px; top: auto;
+  background: var(--husk-light); color: var(--paddy);
   font-family: var(--font-mono); font-size: 0.72rem; padding: 14px 16px 12px; border-radius: 4px;
-  box-shadow: var(--shadow-tag); transform: rotate(6deg); animation: sway 5s ease-in-out infinite;
-  border: 1px dashed rgba(31,61,43,0.4); min-width: 168px; z-index: 10;
+  box-shadow: var(--shadow-tag); border: 1px dashed rgba(31,61,43,0.4); min-width: 168px; z-index: 10;
+  animation: sway 5s ease-in-out infinite;
 }
+@media(min-width: 900px){
+  .hang-tag{
+    --tag-scale: 1; /* Normal scale for desktop */
+    top: 24px; bottom: auto; right: 18px;
+  }
+}
+
 .hang-tag .hole{
   position:absolute; top:6px; left:50%; transform:translateX(-50%);
   width:8px; height:8px; border-radius:50%; background: var(--rice); border: 1px solid rgba(31,61,43,0.4);
@@ -219,7 +250,7 @@ body.lang-ta .hero-copy h1 em{ font-style:normal; }
 .hang-tag .tag-line b{font-weight:600;}
 .hang-tag .tag-title{font-weight:700; text-transform:uppercase; letter-spacing:0.06em; font-size:0.68rem; margin-bottom:6px; border-bottom:1px dashed rgba(31,61,43,0.35); padding-bottom:6px;}
 
-@keyframes sway{ 0%,100%{ transform: rotate(6deg); } 50%{ transform: rotate(2deg); } }
+@keyframes sway{ 0%,100%{ transform: scale(var(--tag-scale)) rotate(6deg); } 50%{ transform: scale(var(--tag-scale)) rotate(2deg); } }
 @media (prefers-reduced-motion: reduce){ .hang-tag{animation:none;} html{scroll-behavior:auto;} }
 
 /* ===================== SECTION HEADERS ===================== */
@@ -239,12 +270,7 @@ body.lang-ta .hero-copy h1 em{ font-style:normal; }
 }
 .biz-card:hover{ transform: translateY(-6px); box-shadow: 0 18px 36px rgba(31,61,43,0.14); }
 
-.card-header-flex {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 8px;
-}
+.card-header-flex { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
 .card-header-flex h3 { margin-bottom: 0; font-size: 1.55rem; }
 
 .biz-card .biz-tagline{ font-family: var(--font-mono); font-size:0.78rem; color:var(--brick); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:16px; }
@@ -318,18 +344,11 @@ body.lang-ta .hero-copy h1 em{ font-style:normal; }
   cursor:pointer; transition: all 0.2s ease; position:relative; background: var(--rice);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
-.check-card input {
-  /* Do not use display:none, otherwise some browsers ignore clicks */
-  position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer;
-}
+.check-card input { position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
 .check-card .ci{font-size:1.5rem; margin-bottom:6px; display:block;}
 .check-card .cl{font-size:0.85rem; font-weight:600; color:var(--ink);}
 .check-card:hover{border-color: var(--sprout);}
-.check-card.checked { 
-  border-color: var(--paddy); 
-  background: rgba(76,122,84,0.1); 
-  box-shadow: 0 0 0 2px rgba(76,122,84,0.18) inset; 
-}
+.check-card.checked { border-color: var(--paddy); background: rgba(76,122,84,0.1); box-shadow: 0 0 0 2px rgba(76,122,84,0.18) inset; }
 .check-card.checked::after{ content:"✓"; position:absolute; top:6px; right:8px; color:var(--paddy); font-weight:700; font-size:0.85rem; }
 
 .form-footer{
@@ -397,7 +416,6 @@ body.lang-ta .footer-col h4{ font-family:var(--font-ta); text-transform:none; le
     <a href="#top" class="brand">
       <img src="images/radha-logo.jpg.png" alt="Radha Farms Logo" class="logo-img" onerror="this.style.display='none'">
       <img src="images/mariappan-logo.jpg.png" alt="Mariappan Mill Logo" class="logo-img" onerror="this.style.display='none'">
-      <span data-i18n="brand">Radha Farms &amp; Mariappan Mill</span>
     </a>
 
     <ul class="nav-links">
@@ -420,18 +438,20 @@ body.lang-ta .footer-col h4{ font-family:var(--font-ta); text-transform:none; le
       </button>
     </div>
   </div>
-
-  <div class="mobile-menu" id="mobileMenu">
-    <a href="#businesses" data-i18n="navBusinesses">Our Businesses</a>
-    <a href="#faq" data-i18n="navFaq">FAQ</a>
-    <a href="#order" data-i18n="navOrder">Order Products</a>
-    <a href="#footer-contact" data-i18n="navContact">Contact</a>
-    <div class="lang-toggle lang-toggle-mobile" role="group" aria-label="Language / மொழி">
-      <button type="button" class="lang-btn" data-lang="en" aria-pressed="true">EN</button>
-      <button type="button" class="lang-btn" data-lang="ta" aria-pressed="false">தமிழ்</button>
-    </div>
-  </div>
 </nav>
+
+<div class="menu-overlay" id="menuOverlay"></div>
+
+<div class="mobile-menu" id="mobileMenu">
+  <div class="lang-toggle lang-toggle-mobile" role="group" aria-label="Language / மொழி">
+    <button type="button" class="lang-btn" data-lang="en" aria-pressed="true">EN</button>
+    <button type="button" class="lang-btn" data-lang="ta" aria-pressed="false">தமிழ்</button>
+  </div>
+  <a href="#businesses" data-i18n="navBusinesses">Our Businesses</a>
+  <a href="#faq" data-i18n="navFaq">FAQ</a>
+  <a href="#order" data-i18n="navOrder">Order Products</a>
+  <a href="#footer-contact" data-i18n="navContact">Contact</a>
+</div>
 
 <main id="main">
 
@@ -715,7 +735,7 @@ body.lang-ta .footer-col h4{ font-family:var(--font-ta); text-transform:none; le
 const translations = {
   en: {
     skipLink: "Skip to content",
-    brand: "Radha Farms &amp; Mariappan Mill",
+    brand: "", // Removed from text so logos sit cleanly on mobile
     navBusinesses: "Our Businesses",
     navFaq: "FAQ",
     navOrder: "Order",
@@ -727,8 +747,6 @@ const translations = {
     heroLede: "As the proud owner of Radha Farms and Mariappan Rice Mill, Sankar M personally oversees every litre of milk, every egg, and every sack of rice to ensure premium quality straight to your home.",
     heroSecondaryCta: "See What's Available",
     heroNote: "Currently taking orders for this week's delivery round",
-    heroPhTitle: "Photo of Sankar on the farm",
-    heroPhSub: "Add a high-quality image here — Sankar with the herd, at the mill, or on delivery rounds",
 
     tagTitle: "Today's Ledger",
     tagMilk: "Cow Milk", tagMilkVal: "Fresh · AM",
@@ -817,7 +835,7 @@ const translations = {
 
   ta: {
     skipLink: "உள்ளடக்கத்திற்குச் செல்ல",
-    brand: "ராதா பார்ம்ஸ் &amp; மாரியப்பன் மில்",
+    brand: "", 
     navBusinesses: "எங்கள் தொழில்கள்",
     navFaq: "கேள்விகள்",
     navOrder: "ஆர்டர்",
@@ -829,8 +847,6 @@ const translations = {
     heroLede: "ராதா பார்ம்ஸ் மற்றும் மாரியப்பன் அரிசி ஆலையின் உரிமையாளராக, சங்கர் M ஒவ்வொரு லிட்டர் பாலும், ஒவ்வொரு முட்டையும், ஒவ்வொரு அரிசி மூட்டையும் நேரில் கவனித்து உங்கள் வீட்டிற்கு உயர்தரத்தை உறுதி செய்கிறார்.",
     heroSecondaryCta: "என்ன கிடைக்கிறது பாருங்கள்",
     heroNote: "இந்த வார விநியோகத்திற்கு தற்போது ஆர்டர்கள் பெறப்படுகின்றன",
-    heroPhTitle: "பண்ணையில் சங்கரின் புகைப்படம்",
-    heroPhSub: "இங்கே ஒரு உயர்தர படத்தைச் சேர்க்கவும் — மந்தையுடன் சங்கர், ஆலையில், அல்லது விநியோக நேரத்தில்",
 
     tagTitle: "இன்றைய பதிவேடு",
     tagMilk: "பசு பால்", tagMilkVal: "புதியது · காலை",
@@ -955,15 +971,24 @@ document.querySelectorAll('.lang-btn').forEach(btn => {
   btn.addEventListener('click', () => applyLanguage(btn.getAttribute('data-lang')));
 });
 
-/* ===================== NAV: mobile menu toggle ===================== */
+/* ===================== NAV: SLIDE MENU LOGIC ===================== */
 const navToggle = document.getElementById('navToggle');
 const mobileMenu = document.getElementById('mobileMenu');
-navToggle.addEventListener('click', () => {
+const menuOverlay = document.getElementById('menuOverlay');
+
+function toggleMenu() {
   const isOpen = mobileMenu.classList.toggle('open');
+  navToggle.classList.toggle('open', isOpen);
+  menuOverlay.classList.toggle('open', isOpen);
   navToggle.setAttribute('aria-expanded', isOpen);
-});
+  document.body.style.overflow = isOpen ? 'hidden' : ''; // Prevent scrolling behind menu
+}
+
+navToggle.addEventListener('click', toggleMenu);
+menuOverlay.addEventListener('click', toggleMenu);
+
 mobileMenu.querySelectorAll('a').forEach(link => {
-  link.addEventListener('click', () => mobileMenu.classList.remove('open'));
+  link.addEventListener('click', toggleMenu);
 });
 
 /* ===================== FAQ accordion ===================== */
@@ -979,7 +1004,6 @@ document.querySelectorAll('.faq-item').forEach(item => {
 document.querySelectorAll('.check-card').forEach(card => {
   const input = card.querySelector('input');
   
-  // Listen for the change event on the hidden checkbox
   input.addEventListener('change', () => {
     card.classList.toggle('checked', input.checked);
     clearProductError();
@@ -999,9 +1023,6 @@ function setFieldState(id, valid){
 }
 
 form.addEventListener('submit', (e) => {
-  // We DO NOT use e.preventDefault() unconditionally here anymore because 
-  // we want the form to send the data to Formspree
-  
   const name = document.getElementById('name').value.trim();
   const phone = document.getElementById('phone').value.trim();
   const address = document.getElementById('address').value.trim();
@@ -1031,14 +1052,11 @@ form.addEventListener('submit', (e) => {
   }
 
   if (!valid){
-    e.preventDefault(); // Stop the submit if validation fails
+    e.preventDefault(); 
     const firstInvalid = form.querySelector('.invalid input, .invalid textarea');
     if (firstInvalid) firstInvalid.focus();
     return;
   }
-  
-  // If valid, the form proceeds automatically to the action URL in your HTML.
-  // We don't need window.location.href = mailto: anymore.
 });
 
 /* ===================== Scroll reveal animation ===================== */
