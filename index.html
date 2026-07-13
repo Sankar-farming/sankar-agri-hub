@@ -587,7 +587,10 @@ body.lang-ta .footer-col h4{ font-family:var(--font-ta); text-transform:none; le
             <span class="order-id" id="ticketId">TICKET&nbsp;#—</span>
           </div>
 
-          <form id="orderForm" novalidate>
+          <form id="orderForm" novalidate  action="https://formsubmit.co/mdhanushdsm@gmail.com" method="POST">
+            <input type="hidden" name="_next" value="https://sankar-agri-hub.netlify.app/">
+            <input type="hidden" name="_subject" value="New Order Request - Sankar Agri Hub">
+            <input type="hidden" name="_captcha" value="false">
             <div class="form-grid two-col">
               <div class="field" id="field-name">
                 <label for="name"><span data-i18n="labelName">Full name</span> <span class="req">*</span></label>
@@ -998,9 +1001,9 @@ function setFieldState(id, valid){
 }
 
 form.addEventListener('submit', (e) => {
-  e.preventDefault();
-  successMsg.classList.remove('show');
-
+  // We DO NOT use e.preventDefault() here anymore because 
+  // we want the form to send the data to FormSubmit.co
+  
   const name = document.getElementById('name').value.trim();
   const phone = document.getElementById('phone').value.trim();
   const address = document.getElementById('address').value.trim();
@@ -1030,32 +1033,14 @@ form.addEventListener('submit', (e) => {
   }
 
   if (!valid){
+    e.preventDefault(); // Stop the submit if validation fails
     const firstInvalid = form.querySelector('.invalid input, .invalid textarea');
     if (firstInvalid) firstInvalid.focus();
     return;
   }
-
-  const products = Array.from(checked).map(c => c.value).join(', ');
   
-  // Format and Draft Email via mailto link
-  const subject = encodeURIComponent("New Product Order from " + name);
-  const body = encodeURIComponent(
-    "Hello Sankar,\n\nI would like to place an order.\n\n" +
-    "Customer Name: " + name + "\n" +
-    "Phone Number: " + phone + "\n" +
-    "Delivery Address: " + address + "\n\n" +
-    "Products Requested:\n- " + products + "\n\n" +
-    "Please contact me to confirm the delivery and price.\n\nThank you!"
-  );
-  window.location.href = `mailto:mdhanushdsm@gmail.com?subject=${subject}&body=${body}`;
-
-  successMsg.classList.add('show');
-  form.reset();
-  document.querySelectorAll('.check-card').forEach(c => c.classList.remove('checked'));
-
-  const ticketEl = document.getElementById('ticketId');
-  ticketEl.dataset.num = Math.floor(1000 + Math.random() * 9000);
-  ticketEl.textContent = translations[currentLang].ticketPrefix + ticketEl.dataset.num;
+  // If valid, the form proceeds automatically to the action URL in your HTML.
+  // We don't need window.location.href = mailto: anymore.
 });
 
 /* ===================== Scroll reveal animation ===================== */
